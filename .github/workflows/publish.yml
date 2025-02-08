@@ -1,0 +1,146 @@
+name: Publish
+
+on:
+  workflow_call:
+    inputs:
+      simulate:
+        description: "Purely simulate the action of publishing."
+        required: true
+        type: boolean
+      curseforge-release-type:
+        description: "Curseforge Release Type"
+        required: true
+        type: string
+      tag-name:
+        description: "The tag to publish this release as."
+        required: true
+        type: string
+      release-body:
+        description: 'The release notes to publish.'
+        required: false
+        type: string
+      changelog-body:
+        description: 'What to insert into CHANGELOG.md'
+        required: false
+        type: string
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CI: 'true'
+    outputs:
+      mod_ver: ${{ steps.mod_ver.outputs.modVersion }}
+      mod_id: ${{ steps.mod_id.outputs.modId }}
+      mod_name: ${{ steps.mod_name.outputs.modName }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Build
+        uses: ./.github/actions/build_setup
+
+      - name: Get Mod Id
+        id: mod_id
+        run: echo "modId=$(./gradlew -q printModId)" >> $GITHUB_OUTPUT
+
+      - name: Get Mod Name
+        id: mod_name
+        run: echo "modName=$(./gradlew -q printModName)" >> $GITHUB_OUTPUT
+
+      - name: Get Version
+        id: mod_ver
+        run: echo "modVersion=$(./gradlew -q printModVersion)" >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: ./gradlew assemble --build-cache
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: build/libs/*
+          if-no-files-found: error
+          retention-days: 3
+
+  upload-release-artifacts:
+    name: Upload Artifacts
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+      - name: Upload artifacts to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag-name }}
+          files: ./*.jar
+          fail_on_unmatched_files: true
+
+  publish-to-curseforge:
+    name: Publish to CF
+    needs: build
+    if: ${{ inputs.simulate == false }} # don't actually publish if we're just testing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+      - name: Publish Mod
+        uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          curseforge-id: 1195781
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          files: |
+            ./${{ needs.build.outputs.mod_id }}-${{ needs.build.outputs.mod_ver }}.jar
+            ./!(${{ needs.build.outputs.mod_id }}-${{ needs.build.outputs.mod_ver }}.jar)
+          name: '${{ needs.build.outputs.mod_name }} ${{ needs.build.outputs.mod_ver }}'
+          version: ${{ needs.build.outputs.mod_ver }}
+          version-type: ${{ inputs.curseforge-release-type }}
+          changelog: ${{ inputs.release-body }}
+          loaders: "forge"
+          java: "17"
+          fail-mode: fail
+
+  # After successful release, PR version bump and changelog
+  bump-version-and-changelog:
+    name: Bump Version and Build Changelog
+    needs: [ build, upload-release-artifacts, publish-to-curseforge ]
+    if: ${{ always() && !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 'main'
+      - name: Bump Version
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -C gh/release-main
+          BUMPED=$(echo ${{ needs.build.outputs.mod_ver }} | awk -F. '{OFS="."; $NF = $NF+1; print}')
+          sed -i "s/= ${{ needs.build.outputs.mod_ver }}/= ${BUMPED}/" gradle.properties
+          git commit -am "Bump version to ${BUMPED}"
+      - name: Prepend to CHANGELOG
+        if: inputs.changelog-body
+        run: |
+          { head -n 2 CHANGELOG.md; echo -e "${{ inputs.changelog-body }}"; tail -n +3 CHANGELOG.md; } > temp.md && mv temp.md CHANGELOG.md
+          git commit -am "Updated CHANGELOG"
+      - name: Push and PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git push --force --set-upstream origin gh/release-main
+          gh pr create -B main -H gh/release-main --title "RELEASE for 1.20.1" --body "Created by GH Workflow" --label "ignore changelog"

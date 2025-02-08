@@ -1,0 +1,42 @@
+name: Publish on Release
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  meta:
+    name: Generate metadata
+    runs-on: ubuntu-latest
+    outputs:
+      CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Get Config
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: '.github/json'
+      - name: Generate changelog
+        id: changelog
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        uses: mikepenz/release-changelog-builder-action@v5
+        with:
+          configuration: './.github/json/config.json'
+          ignorePreReleases: true
+          fetchViaCommits: true
+          failOnError: true
+
+  publish:
+    name: Publish
+    needs: [ meta ]
+    secrets: inherit
+    uses: ./.github/workflows/publish.yml
+    with:
+      simulate: ${{ startsWith(github.event.release.name, 'simulate') || github.repository_owner != 'The-Incipisphere' }}
+      tag-name: ${{ github.ref_name }}
+      curseforge-release-type: ${{ (contains(github.event.release.name, "alpha") && "alpha") || (contains(github.event.release.name, "beta") && "beta") || (contains(github.event.release.name, "release") && "release")}}
+      release-body: ${{ github.event.release.body }}
+      changelog-body: ${{ needs.meta.outputs.CHANGELOG }}

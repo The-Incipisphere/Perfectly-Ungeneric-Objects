@@ -1,0 +1,40 @@
+name: Build Setup
+description: Setup for standard Java builds.
+
+inputs:
+  update-cache:
+    description: If the gradle cache should be updated.
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Yo, Actions. You gotta checkout our repo, it's so dang cool.
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Here's your JDK to work with. You're gonna need it here.
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Oh yeah, we have to make sure the Gradle wrapper's fine. Dude's quite fragile on the outside.
+      uses: gradle/actions/wrapper-validation@v3
+
+    - name: We also have to remind him that he's runnable, just in case others have told him to forget.
+      shell: bash
+      run: chmod +x gradlew
+
+    - name: Now we get him to call over his big bro Gradle, to let you properly start your work.
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        cache-write-only: ${{ inputs.update-cache }}
+        generate-job-summary: false
+        gradle-home-cache-includes: |
+          caches
+          notifications
+          jdks
+          wrapper
