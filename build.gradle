@@ -27,7 +27,7 @@ repositories {
     mavenCentral()
     maven {
         name 'FirstDarkDev'
-        url "https://maven.firstdarkdev.xyz/snapshots/"
+        url "https://maven.firstdark.dev/snapshots/"
     }
     maven {
         name = 'KubeJS and Rhino'
