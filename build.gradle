@@ -169,13 +169,13 @@ dependencies {
     // EMI
     modRuntimeOnly("dev.emi:emi-forge:$project.emi_version+$project.minecraft_version")
 
-    // Registrate (uncomment if you need to use Registrate.)
-    //modImplementation("com.tterrag.registrate:Registrate:$project.registrate_version")
-    //jarJar(implementation("com.tterrag.registrate:Registrate")) {
-    //    version {
-    //        strictly("$project.registrate_version")
-    //    }
-    //}
+    // Registrate
+    modImplementation("com.tterrag.registrate:Registrate:$project.registrate_version")
+    jarJar(implementation("com.tterrag.registrate:Registrate")) {
+        version {
+            strictly("$project.registrate_version")
+        }
+    }
 
     // KubeJS (and Architectury)
     modImplementation("dev.latvian.mods:kubejs-forge:$project.kubejs_version")

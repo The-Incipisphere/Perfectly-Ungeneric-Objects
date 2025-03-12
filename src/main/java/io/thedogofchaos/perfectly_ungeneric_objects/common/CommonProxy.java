@@ -1,13 +1,15 @@
-package io.thedogofchaos.becsmodtemplate.common;
+package io.thedogofchaos.perfectly_ungeneric_objects.common;
 
+import com.tterrag.registrate.Registrate;
+import io.thedogofchaos.perfectly_ungeneric_objects.PerfectlyUngenericObjects;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-import static io.thedogofchaos.becsmodtemplate.Becs_Mod_Template.LOGGER;
+import static io.thedogofchaos.perfectly_ungeneric_objects.PerfectlyUngenericObjects.LOGGER;
 
 /**<p>
- * This class handles the logic for your mod on dedicated servers.
- * Most of your mod's features, like registration and event handling, should be managed here.
+ * This class handles the logic for the mod on dedicated servers.
+ * Most of the mod's features, like registration and event handling, should be managed here.
  * </p>
  * <p>
  * This class is extended by ClientProxy because both Minecraft clients and dedicated servers share some common code.
@@ -19,8 +21,8 @@ import static io.thedogofchaos.becsmodtemplate.Becs_Mod_Template.LOGGER;
  * </p>
  */
 public class CommonProxy {
-    // public static Registrate REGISTRATE; // UNCOMMENT IF USING REGISTRATE
-    /** You don't usually need to do anything with this field, only for things that expect a {@link FMLJavaModLoadingContext} field as a parameter.*/
+    public static Registrate REGISTRATE; // UNCOMMENT IF USING REGISTRATE
+    /** Nothing needs to usually be done with this field, only for things that expect a {@link FMLJavaModLoadingContext} field as a parameter.*/
     public final FMLJavaModLoadingContext modLoadingContext = FMLJavaModLoadingContext.get();
     /**<p>
      * <blockquote cite="https://forge.gemwire.uk/wiki/Events">
@@ -31,7 +33,7 @@ public class CommonProxy {
      * <a href="https://forge.gemwire.uk/wiki/Events">Forge Community Wiki: Events</a>
      * </p>
      * <p>
-     * In this case, this is getting the event bus from the {@link CommonProxy#modLoadingContext} above, so that you can register your mod's event listeners to the bus.
+     * In this case, this is getting the event bus from the {@link CommonProxy#modLoadingContext} above, so that we can register the mod's event listeners to the bus.
      * </p>
      */
     public final IEventBus modEventBus = modLoadingContext.getModEventBus();
@@ -42,6 +44,6 @@ public class CommonProxy {
 
     /** This method should only be executed by either {@code super.init(modEventBus);} in {@link io.thedogofchaos.becsmodtemplate.client.ClientProxy#init(IEventBus)} or {@code proxy.init(proxy.modEventBus);} in {@link io.thedogofchaos.becsmodtemplate.Becs_Mod_Template}*/
     public void init(IEventBus modEventBus) {
-        // REGISTRATE = Registrate.create(Becs_Mod_Template.MOD_ID); // UNCOMMENT IF USING REGISTRATE
+        REGISTRATE = Registrate.create(PerfectlyUngenericObjects.MOD_ID); // UNCOMMENT IF USING REGISTRATE
     }
 }
