@@ -24,7 +24,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         uses: mikepenz/release-changelog-builder-action@v5
         with:
-          configuration: './.github/json/config.json'
+          mode: "COMMIT"
+          configuration: './.github/json/config_stable.json'
           ignorePreReleases: true
           fetchViaCommits: true
           failOnError: true

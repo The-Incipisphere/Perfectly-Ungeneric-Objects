@@ -14,8 +14,8 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-boolean isSnapshot = System.getenv("SNAPSHOT")
-version = "${mod_version}" + (isSnapshot ? "-SNAPSHOT" : "")
+boolean isBleedingEdge = System.getenv("BLEEDING_EDGE")
+version = "${mod_version}" + (isBleedingEdge ? "-BLEEDINGEDGE" : "")
 // boolean isCI = System.getenv("CI") != null
 group = mod_group_id
 
@@ -169,7 +169,7 @@ dependencies {
     // EMI
     modRuntimeOnly("dev.emi:emi-forge:$project.emi_version+$project.minecraft_version")
 
-    // Registrate (uncomment if Registrate is needed)
+    // Registrate (uncomment if you need to use Registrate.)
     //modImplementation("com.tterrag.registrate:Registrate:$project.registrate_version")
     //jarJar(implementation("com.tterrag.registrate:Registrate")) {
     //    version {
@@ -188,13 +188,16 @@ dependencies {
     // Jade
     modImplementation("curse.maven:jade-324717:5876199") // Version 11.12.2
 
-    // Mixin Extras
+    // Mixin Extras (not needed unless you're using Mixins)
     //implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$project.mixinextras_version"))
     //implementation(include("io.github.llamalad7:mixinextras-forge:$project.mixinextras_version"))
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    // Jetbrains Annotations
+    compileOnly 'org.jetbrains:annotations:26.0.2'
 }
 
 // Uncomment the lines below if you wish to configure mixin. The mixin file should be named modid.mixins.json.

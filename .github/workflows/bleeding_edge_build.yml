@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      SNAPSHOT: true
+      BLEEDING_EDGE: true
       CI: true
     permissions:
       contents: write
@@ -42,7 +42,7 @@ jobs:
         run: ./gradlew build --build-cache --stacktrace
 
       - name: Rename Jars
-        run: for file in build/libs/*; do mv "$file" "${file/SHOT/SHOT-$(date --utc '+%Y%m%d-%H%M%S')-${{ env.LATEST_COMMIT_HASH}}}"; done;
+        run: for file in build/libs/*; do mv "$file" "${file/EDGE/EDGE-$(date --utc '+%Y%m%d-%H%M%S')-${{ env.LATEST_COMMIT_HASH}}}"; done;
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -56,7 +56,8 @@ jobs:
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v5
         with:
-          configuration: ./.github/json/config-latest.json
+          mode: "COMMIT"
+          configuration: ./.github/json/config-bleedingedge.json
           fromTag: bleeding-edge
           toTag: refs/heads/main
           fetchViaCommits: true

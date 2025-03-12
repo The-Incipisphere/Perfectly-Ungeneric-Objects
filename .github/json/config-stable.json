@@ -1,0 +1,45 @@
+{
+  "categories": [
+    {
+      "title": "### Added",
+      "labels": ["type: feature"]
+    },
+    {
+      "title": "### Fixed",
+      "labels": ["type: bugfix"]
+    },
+    {
+      "title": "### Changed",
+      "labels": ["type: refactor", "type: translation"]
+    }
+  ],
+  "sort": "ASC",
+  "template": "## Version [v#{{VERSION}}](#{{RELEASE_DIFF}})\n#{{CHANGELOG}} ",
+  "commit_template": "- #{{TITLE}} [@#{{AUTHOR}} in #{{MERGE_SHA}}]",
+  "custom_placeholders": [
+    {
+      "name": "VERSION",
+      "source": "TO_TAG",
+      "transformer": {
+        "pattern": "v?([0-9\\.]+)(-[0-9\\.]+)?",
+        "target": "$1"
+      }
+    }
+  ],
+  "empty_template": "# Graft changelog to yourself so that you have one hideous release message\n![What Changelog?](https://github.com/user-attachments/assets/f80c9175-4052-45d3-8eda-635187027819)\nWhat changelog?",
+  "ignore_labels": ["ignore changelog"],
+  "tag_resolver": {
+    "method": "semver",
+    "filter": {
+      "pattern": "^(?!v?[0-9\\.]+(-1\\.20\\.1)?$).+$",
+      "flags": "gu"
+    },
+    "transformer": {
+      "pattern": "v?([0-9\\.]+)(-[0-9\\.]+)?",
+      "target": "$1"
+    }
+  },
+  "max_pull_requests": 1000,
+  "max_back_track_time_days": 90,
+  "base_branches": ["1.20.1"]
+}

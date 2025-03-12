@@ -28,3 +28,6 @@ repo
 
 # env
 *.env
+
+# because this shit is just a bunch of hashes that get autogenned
+/src/generated/resources/.cache
