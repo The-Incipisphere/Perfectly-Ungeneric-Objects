@@ -1,8 +1,10 @@
-package io.thedogofchaos.perfectly_ungeneric_objects;
+package io.thedogofchaos.perfectlyungenericobjects;
 
+import com.google.common.base.CaseFormat;
 import com.mojang.logging.LogUtils;
-import io.thedogofchaos.perfectly_ungeneric_objects.common.CommonProxy;
-import io.thedogofchaos.perfectly_ungeneric_objects.client.ClientProxy;
+import io.thedogofchaos.perfectlyungenericobjects.common.CommonProxy;
+import io.thedogofchaos.perfectlyungenericobjects.client.ClientProxy;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -30,5 +32,9 @@ public class PerfectlyUngenericObjects {
     /** Do anything that needs to be executed statically here. */
     public static void init() {
         LOGGER.info("We're loading {} on the {}", MOD_NAME, FMLEnvironment.dist);
+    }
+
+    public static ResourceLocation id(String path) {
+        return new ResourceLocation(MOD_ID, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, path));
     }
 }

@@ -1,9 +1,9 @@
-package io.thedogofchaos.perfectly_ungeneric_objects.client;
+package io.thedogofchaos.perfectlyungenericobjects.client;
 
-import io.thedogofchaos.perfectly_ungeneric_objects.common.CommonProxy;
+import io.thedogofchaos.perfectlyungenericobjects.common.CommonProxy;
 import net.minecraftforge.eventbus.api.IEventBus;
 
-import static io.thedogofchaos.perfectly_ungeneric_objects.PerfectlyUngenericObjects.LOGGER;
+import static io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects.LOGGER;
 
 /**
  * The ClientProxy class handles all client-specific operations for the mod.

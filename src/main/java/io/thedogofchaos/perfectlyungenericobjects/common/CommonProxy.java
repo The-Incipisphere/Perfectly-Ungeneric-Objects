@@ -1,11 +1,11 @@
-package io.thedogofchaos.perfectly_ungeneric_objects.common;
+package io.thedogofchaos.perfectlyungenericobjects.common;
 
 import com.tterrag.registrate.Registrate;
-import io.thedogofchaos.perfectly_ungeneric_objects.PerfectlyUngenericObjects;
+import io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-import static io.thedogofchaos.perfectly_ungeneric_objects.PerfectlyUngenericObjects.LOGGER;
+import static io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects.LOGGER;
 
 /**<p>
  * This class handles the logic for the mod on dedicated servers.
@@ -21,7 +21,7 @@ import static io.thedogofchaos.perfectly_ungeneric_objects.PerfectlyUngenericObj
  * </p>
  */
 public class CommonProxy {
-    public static Registrate REGISTRATE; // UNCOMMENT IF USING REGISTRATE
+    public static Registrate REGISTRATE;
     /** Nothing needs to usually be done with this field, only for things that expect a {@link FMLJavaModLoadingContext} field as a parameter.*/
     public final FMLJavaModLoadingContext modLoadingContext = FMLJavaModLoadingContext.get();
     /**<p>
@@ -42,8 +42,9 @@ public class CommonProxy {
         LOGGER.info("CommonProxy loading!");
     }
 
-    /** This method should only be executed by either {@code super.init(modEventBus);} in {@link io.thedogofchaos.becsmodtemplate.client.ClientProxy#init(IEventBus)} or {@code proxy.init(proxy.modEventBus);} in {@link io.thedogofchaos.becsmodtemplate.Becs_Mod_Template}*/
+    /** This method should only be executed by either {@code super.init(modEventBus);} in {@link io.thedogofchaos.perfectlyungenericobjects.client.ClientProxy#init(IEventBus)} or {@code proxy.init(proxy.modEventBus);} in {@link io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects}*/
     public void init(IEventBus modEventBus) {
-        REGISTRATE = Registrate.create(PerfectlyUngenericObjects.MOD_ID); // UNCOMMENT IF USING REGISTRATE
+        REGISTRATE = Registrate.create(PerfectlyUngenericObjects.MOD_ID);
+        CommonRegistry.init(modEventBus);
     }
 }
