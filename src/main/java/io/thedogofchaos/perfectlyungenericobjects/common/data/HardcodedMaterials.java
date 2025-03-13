@@ -9,8 +9,10 @@ import static io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjec
 public class HardcodedMaterials {
     public static Material Standardium = new Material.Builder(id("standardium"))
             .ingot() // e.g. also auto-gens Nuggets, Blocks and Dusts with pre-set properties (non exhaustive)
-            .setTextures(MaterialTextures.DEV) // will be an enum class until i get some form of dynamically accessing textures
-            .setColors(new int[]{0x00FF00, 0x008000, 0x004000, 0x800080}) // may or may not be useful in the case of other modules like Parcel Pyxis or Jade's Atrium
+            .setTextures(MaterialTextures.DEV) // will be an enum class until i get some way of dynamically accessing textures
+            .setPrimaryColour(0x00FF00)
+            .setSecondaryColour(0x008000)
+            .setAdditionalColours(new int[]{0x008000,0x004000, 0x800080})
             .buildAndRegister();
     public static Material Componentium;
     public static Material Gemstonium;
