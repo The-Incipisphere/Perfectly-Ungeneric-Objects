@@ -13,8 +13,6 @@ import static io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjec
 
 /** Inspired largely by Gregtech Modern's own material system */
 public class Material {
-    private static int MINIMUM_COLOURS_LENGTH = 2; // TODO: possibly make this dynamic based on which mods of the suite are installed? or is that overcomplicating things?
-
     @NotNull
     @Getter
     private final MaterialInfo materialInfo;
@@ -39,7 +37,7 @@ public class Material {
     }
 
     private void registerMaterial() {
-        // do shit here
+        // do shit here once the material registry is up and running
     }
 
     public static class Builder {
@@ -55,8 +53,8 @@ public class Material {
             this.materialInfo = new MaterialInfo(id);
         }
 
-        public Builder ingot() {
-            // todo: define shit to
+        public Builder metal() {
+            // todo: define shit for the material registry to autogen Blocks, Ingots, and Nuggets
             return this;
         }
 
