@@ -6,23 +6,23 @@ import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects.LOGGER;
+import java.util.EnumSet;
 
 /** Inspired largely by Gregtech Modern's own material system */
 public class Material {
     @NotNull
     @Getter
     private final MaterialInfo materialInfo;
+    @Getter
+    private EnumSet<MaterialComponent> components;
 
     public Material(MaterialInfo materialInfo) {
         this.materialInfo = materialInfo;
     }
 
-    protected Material(ResourceLocation id) {
+    protected Material(ResourceLocation id, EnumSet<MaterialComponent> components) {
         this.materialInfo = new MaterialInfo(id);
+        this.components = components;
     }
 
     public String getName() {
@@ -41,7 +41,7 @@ public class Material {
     }
 
     public static class Builder {
-
+        private EnumSet<MaterialComponent> components = EnumSet.noneOf(MaterialComponent.class);
         private final MaterialInfo materialInfo;
 
         public Builder(@NotNull ResourceLocation id) {
@@ -53,8 +53,9 @@ public class Material {
             this.materialInfo = new MaterialInfo(id);
         }
 
-        public Builder metal() {
-            // todo: define shit for the material registry to autogen Blocks, Ingots, and Nuggets
+        // todo: define shit for the material registry (once it's ready) to be able to specifically autogen Blocks, Ingots, and Nuggets
+        public Builder ingot() {
+            components.add(MaterialComponent.INGOT);
             return this;
         }
 
@@ -105,5 +106,12 @@ public class Material {
             this.id = id;
             this.colours = new IntArrayList(new int[]{-1,-1});
         }
+    }
+
+    public enum MaterialComponent {
+        INGOT,
+        NUGGET,
+        BLOCK,
+        DUST
     }
 }
