@@ -1,12 +1,16 @@
 package io.thedogofchaos.perfectlyungenericobjects.common.material;
 
+import io.thedogofchaos.perfectlyungenericobjects.common.registry.MaterialRegistry;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
+import lombok.Getter;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 /** Inspired largely by GregTech Modern's own material system */
 public class Material {
@@ -14,15 +18,22 @@ public class Material {
     @Getter
     private final MaterialInfo materialInfo;
     @Getter
-    private EnumSet<MaterialComponent> components;
+    private EnumSet<MaterialComponent> materialComponents;
+    @Getter
+    private EnumSet<MaterialFlag> materialFlags;
 
-    public Material(@NotNull MaterialInfo materialInfo) {
-        this.materialInfo = materialInfo;
+    // i wont even begin to claim that i know what the fuck this constructor is for
+    protected Material(@NotNull ResourceLocation id) {
+        this.materialInfo = new MaterialInfo(id);
+        this.materialInfo.textures = MaterialTextures.DEV;
+        this.materialComponents = EnumSet.noneOf(MaterialComponent.class);
+        this.materialFlags = EnumSet.noneOf(MaterialFlag.class);
     }
 
-    protected Material(ResourceLocation id, EnumSet<MaterialComponent> components) {
-        this.materialInfo = new MaterialInfo(id);
-        this.components = components;
+    private Material(MaterialInfo materialInfo, EnumSet<MaterialComponent> materialComponents, EnumSet<MaterialFlag> materialFlags) {
+        this.materialInfo = materialInfo;
+        this.materialComponents = materialComponents;
+        this.materialFlags = materialFlags;
     }
 
     public String getName() {
@@ -37,11 +48,12 @@ public class Material {
     }
 
     private void registerMaterial() {
-        // do shit here once the material registry is up and running
+        MaterialRegistry.getInstance().register(this);
     }
 
     public static class Builder {
-        private EnumSet<MaterialComponent> components = EnumSet.noneOf(MaterialComponent.class);
+        private EnumSet<MaterialComponent> materialComponents = EnumSet.noneOf(MaterialComponent.class);
+        private EnumSet<MaterialFlag> materialFlags = EnumSet.noneOf(MaterialFlag.class);
         private final MaterialInfo materialInfo;
 
         /**
@@ -80,10 +92,10 @@ public class Material {
          * @return The {@link Builder} instance, for chaining.
          */
         public Builder ingot(boolean alsoGenerateDust, boolean alsoGenerateNugget, boolean alsoGenerateBlock) {
-            components.add(MaterialComponent.INGOT);
-            if (alsoGenerateDust) components.add(MaterialComponent.DUST);
-            if (alsoGenerateNugget) components.add(MaterialComponent.NUGGET);
-            if (alsoGenerateBlock) components.add(MaterialComponent.BLOCK);
+            materialComponents.add(MaterialComponent.INGOT);
+            if (alsoGenerateDust) materialComponents.add(MaterialComponent.DUST);
+            if (alsoGenerateNugget) materialComponents.add(MaterialComponent.NUGGET);
+            if (alsoGenerateBlock) materialComponents.add(MaterialComponent.STORAGE_BLOCK);
             return this;
         }
 
@@ -141,10 +153,36 @@ public class Material {
          * @return The constructed {@link Material} instance.
          */
         public Material buildAndRegister() {
-            // this.materialInfo.colours.replaceAll(colour -> colour == -1 ? 0xFFFFFF : colour); // might not need this
-            var material = new Material(materialInfo);
+            validateMaterialComponents();
+            validateMaterialFlags();
+            var material = new Material(materialInfo, materialComponents, materialFlags);
             material.registerMaterial();
             return material;
+        }
+
+        /** Checks whether the applied flags of a material are valid, given its components.
+         * @throws IllegalStateException (see the method body for what it throws exactly)
+         */
+        private void validateMaterialFlags() {
+            if(this.materialFlags.contains(MaterialFlag.HAS_COMPRESSION_RECIPES)) {
+                if(
+                        !materialComponents.containsAll(Set.of(MaterialComponent.NUGGET, MaterialComponent.INGOT, MaterialComponent.STORAGE_BLOCK)) &&
+                        !materialComponents.containsAll(Set.of(MaterialComponent.NUGGET, MaterialComponent.INGOT)) &&
+                        !materialComponents.containsAll(Set.of(MaterialComponent.INGOT, MaterialComponent.STORAGE_BLOCK)) &&
+                        !materialComponents.containsAll(Set.of(MaterialComponent.GEM, MaterialComponent.STORAGE_BLOCK))
+                ){
+                    throw new IllegalStateException("Material Flag HAS_COMPRESSION_RECIPES requires a valid combination of the following components: (Nugget+Ingot+Block, Nugget+Ingot, Ingot+Block, or Gem+Block). '"+this.materialInfo.id+"' doesn't have any combinations of them! ");
+                }
+            }
+        }
+
+        /** Checks whether the combination of a material's components is valid.
+         * @throws IllegalStateException If both {@link MaterialComponent#INGOT} and {@link MaterialComponent#GEM} exist on the same material.
+         */
+        private void validateMaterialComponents() {
+            if(this.materialComponents.contains(MaterialComponent.INGOT) && this.materialComponents.contains(MaterialComponent.GEM)){
+                throw new IllegalStateException("Tried to register '"+this.materialInfo.id+"', but it has both INGOT and GEM components, which is not allowed!");
+            }
         }
     }
 
@@ -173,15 +211,27 @@ public class Material {
      * what items or blocks are generated for it.
      */
     public enum MaterialComponent {
-        /** The material can exist as an ingot. Typically used for metals. */
+        /** If this component is present on a material, an Ingot {@link Item} will be generated for it. THIS COMPONENT IS MUTUALLY EXCLUSIVE WITH {@link MaterialComponent#GEM}! */
         INGOT,
-        /** A smaller unit of an ingot, often obtained through crafting or smelting. */
+        /** If this component is present on a material, a Nugget {@link Item} will be generated for it. */
         NUGGET,
-        /** A solid block form of the material, usually craftable from its ingots or dust. */
-        BLOCK,
-        /** A powdered form of the material, often produced via grinding or chemical processing. */
+        /** If this component is present on a material, a {@link BlockItem} will be generated for it.</b> */
+        STORAGE_BLOCK,
+        /** If this component is present on a material, a Dust {@link Item} will be generated for it. */
         DUST,
-        /** A gem-like form of the material, representing crystalline or valuable substances. */
+        /** If this component is present on a material, a Gem {@link Item} will be generated for it. THIS COMPONENT IS MUTUALLY EXCLUSIVE WITH {@link MaterialComponent#INGOT}! */
         GEM
+    }
+
+    public enum MaterialFlag {
+        /** If this flag is present alongside any of the following combinations of components, basic 9:1 compression recipes will be automatically generated.
+         * <ul>
+         *     <li>{@link MaterialComponent#NUGGET} and {@link MaterialComponent#INGOT}</li>
+         *     <li>{@link MaterialComponent#INGOT} and {@link MaterialComponent#STORAGE_BLOCK}</li>
+         *     <li>{@link MaterialComponent#NUGGET} and {@link MaterialComponent#INGOT} and {@link MaterialComponent#STORAGE_BLOCK}</li>
+         *     <li>{@link MaterialComponent#GEM} and {@link MaterialComponent#STORAGE_BLOCK}</li>
+         * </ul>
+         */
+        HAS_COMPRESSION_RECIPES
     }
 }
