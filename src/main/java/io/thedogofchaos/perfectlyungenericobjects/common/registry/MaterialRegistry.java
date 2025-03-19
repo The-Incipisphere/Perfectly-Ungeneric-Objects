@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static io.thedogofchaos.perfectlyungenericobjects.common.CommonProxy.REGISTRATE;
+import static io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects.LOGGER;
 
 /** Singleton class that handles registration of all materials defined using this mod. */
 public class MaterialRegistry {
@@ -56,7 +57,7 @@ public class MaterialRegistry {
 
     public void register(Material material) {
         if (!this.materialRegistryIsFrozen) {
-            if(this.MATERIALS.containsKey(material.getMaterialInfo().getId())){
+            if(!this.MATERIALS.containsKey(material.getMaterialInfo().getId())){
                 this.MATERIALS.put(material.getMaterialInfo().getId(), material);
             } else {
                 throw new IllegalStateException("Tried to register '"+material.getMaterialInfo().getId()+"', but that material has already been registered!");
@@ -70,33 +71,39 @@ public class MaterialRegistry {
         var materials = this.MATERIALS.values();
         materials.forEach(material -> {
             if(material.getMaterialComponents().contains(Material.MaterialComponent.NUGGET)){
-                ItemEntry<Item> nuggetItemEntry = makeNuggetItem(material); // TODO: implement makeNuggetItem
+                ItemEntry<Item> nuggetItemEntry = makeNuggetItem(material);
                 MATERIAL_ITEMS.put(material.getNameWithSuffix("nugget"), nuggetItemEntry);
             }
             if(material.getMaterialComponents().contains(Material.MaterialComponent.INGOT)){
-                ItemEntry<Item> ingotItemEntry = makeIngotItem(material); // TODO: implement makeIngotItem
+                ItemEntry<Item> ingotItemEntry = makeIngotItem(material);
                 MATERIAL_ITEMS.put(material.getNameWithSuffix("ingot"), ingotItemEntry);
             }
             if(material.getMaterialComponents().contains(Material.MaterialComponent.STORAGE_BLOCK)){
-                BlockEntry<Block> storageBlockItemEntry = makeStorageBlockItem(material); // TODO: implement makeStorageBlockItem
+                BlockEntry<Block> storageBlockItemEntry = makeStorageBlockItem(material);
                 MATERIAL_BLOCKS.put(material.getNameWithSuffix("ingot"), storageBlockItemEntry);
             }
         });
     }
 
     private BlockEntry<Block> makeStorageBlockItem(Material material) {
+        LOGGER.debug("Attempting to genererate {}", material.getNameWithSuffix("storage_block"));
         return REGISTRATE
                 .block(material.getNameWithSuffix("storage_block"), Block::new)
+                .item()
+                .build()
                 .register();
+
     }
 
     private ItemEntry<Item> makeIngotItem(Material material) {
+        LOGGER.debug("Attempting to genererate {}", material.getNameWithSuffix("ingot"));
         return REGISTRATE
                 .item(material.getNameWithSuffix("ingot"), Item::new)
                 .register();
     }
 
     private ItemEntry<Item> makeNuggetItem(Material material) {
+        LOGGER.debug("Attempting to genererate {}", material.getNameWithSuffix("nugget"));
         return REGISTRATE
                 .item(material.getNameWithSuffix("nugget"), Item::new)
                 .register();
