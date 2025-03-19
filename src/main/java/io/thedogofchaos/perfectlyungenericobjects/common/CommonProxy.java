@@ -20,7 +20,14 @@ package io.thedogofchaos.perfectlyungenericobjects.common;
 
 import com.tterrag.registrate.Registrate;
 import io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects;
+import io.thedogofchaos.perfectlyungenericobjects.data.pack.PUO_DynamicDataPack;
+import io.thedogofchaos.perfectlyungenericobjects.data.pack.PUO_DynamicResourcePack;
+import io.thedogofchaos.perfectlyungenericobjects.data.pack.PUO_PackSource;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import static io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects.LOGGER;
@@ -64,5 +71,10 @@ public class CommonProxy {
     public void init(IEventBus modEventBus) {
         REGISTRATE = Registrate.create(PerfectlyUngenericObjects.MOD_ID);
         CommonRegistry.init(modEventBus);
+    }
+
+    @SubscribeEvent
+    public void registerPackFinders(AddPackFindersEvent event) {
+        // TODO: implement dynamic resource/data pack generation
     }
 }

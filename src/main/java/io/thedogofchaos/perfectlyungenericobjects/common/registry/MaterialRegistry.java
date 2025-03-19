@@ -18,6 +18,7 @@
 
 package io.thedogofchaos.perfectlyungenericobjects.common.registry;
 
+import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import io.thedogofchaos.perfectlyungenericobjects.common.material.Material;
@@ -26,16 +27,19 @@ import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static io.thedogofchaos.perfectlyungenericobjects.common.CommonProxy.REGISTRATE;
 
 /** Singleton class that handles registration of all materials defined using this mod. */
 public class MaterialRegistry {
     /** The Singleton instance of this class. Initialises early.*/
     private static final MaterialRegistry INSTANCE = new MaterialRegistry();
     private final Map<ResourceLocation, Material> MATERIALS = new HashMap<>();
-    private final Map<String, RegistryEntry<BlockItem>> MATERIAL_BLOCKS = new HashMap<>();
+    private final Map<String, RegistryEntry<Block>> MATERIAL_BLOCKS = new HashMap<>();
     private final Map<String, RegistryEntry<Item>> MATERIAL_ITEMS = new HashMap<>();
 
     @Getter
@@ -74,9 +78,27 @@ public class MaterialRegistry {
                 MATERIAL_ITEMS.put(material.getNameWithSuffix("ingot"), ingotItemEntry);
             }
             if(material.getMaterialComponents().contains(Material.MaterialComponent.STORAGE_BLOCK)){
-                ItemEntry<BlockItem> storageBlockItemEntry = makeStorageBlockItem(material); // TODO: implement makeStorageBlockItem
+                BlockEntry<Block> storageBlockItemEntry = makeStorageBlockItem(material); // TODO: implement makeStorageBlockItem
                 MATERIAL_BLOCKS.put(material.getNameWithSuffix("ingot"), storageBlockItemEntry);
             }
         });
+    }
+
+    private BlockEntry<Block> makeStorageBlockItem(Material material) {
+        return REGISTRATE
+                .block(material.getNameWithSuffix("storage_block"), Block::new)
+                .register();
+    }
+
+    private ItemEntry<Item> makeIngotItem(Material material) {
+        return REGISTRATE
+                .item(material.getNameWithSuffix("ingot"), Item::new)
+                .register();
+    }
+
+    private ItemEntry<Item> makeNuggetItem(Material material) {
+        return REGISTRATE
+                .item(material.getNameWithSuffix("nugget"), Item::new)
+                .register();
     }
 }
