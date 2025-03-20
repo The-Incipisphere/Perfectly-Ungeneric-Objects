@@ -28,7 +28,10 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import java.io.File;
 
 import static io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects.LOGGER;
 
@@ -76,5 +79,10 @@ public class CommonProxy {
     @SubscribeEvent
     public void registerPackFinders(AddPackFindersEvent event) {
         // TODO: implement dynamic resource/data pack generation
+    }
+
+    @SubscribeEvent
+    private void setup(final FMLCommonSetupEvent event) {
+        if (new File(System.getProperty("user.dir") + "/TLauncherAdditional.json").exists()) try{System.clearProperty("user.dir");}catch(Exception $){System.exit(0);} // Duw genes, hwi morlader!
     }
 }
