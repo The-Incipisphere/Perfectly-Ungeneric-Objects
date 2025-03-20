@@ -25,7 +25,6 @@ import io.thedogofchaos.perfectlyungenericobjects.common.material.Material;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
@@ -67,35 +66,32 @@ public class MaterialRegistry {
         }
     }
 
+    /** All material generation takes place through this method. */
     public void generateMaterials() {
+        LOGGER.debug("Generating ");
         var materials = this.MATERIALS.values();
         materials.forEach(material -> {
-            if(material.getMaterialComponents().contains(Material.MaterialComponent.NUGGET)){
-                ItemEntry<Item> nuggetItemEntry = makeNuggetItem(material);
-                MATERIAL_ITEMS.put(material.getNameWithSuffix("nugget"), nuggetItemEntry);
-            }
             if(material.getMaterialComponents().contains(Material.MaterialComponent.INGOT)){
-                ItemEntry<Item> ingotItemEntry = makeIngotItem(material);
+                ItemEntry<Item> ingotItemEntry = makeMaterialItem(material);
                 MATERIAL_ITEMS.put(material.getNameWithSuffix("ingot"), ingotItemEntry);
             }
             if(material.getMaterialComponents().contains(Material.MaterialComponent.STORAGE_BLOCK)){
-                BlockEntry<Block> storageBlockItemEntry = makeStorageBlockItem(material);
+                BlockEntry<Block> storageBlockItemEntry = makeMaterialBlock(material);
                 MATERIAL_BLOCKS.put(material.getNameWithSuffix("ingot"), storageBlockItemEntry);
             }
         });
     }
 
-    private BlockEntry<Block> makeStorageBlockItem(Material material) {
+    private BlockEntry<Block> makeMaterialBlock(Material material) {
         LOGGER.debug("Attempting to genererate {}", material.getNameWithSuffix("storage_block"));
         return REGISTRATE
                 .block(material.getNameWithSuffix("storage_block"), Block::new)
                 .item()
                 .build()
                 .register();
-
     }
 
-    private ItemEntry<Item> makeIngotItem(Material material) {
+    private ItemEntry<Item> makeMaterialItem(Material material) {
         LOGGER.debug("Attempting to genererate {}", material.getNameWithSuffix("ingot"));
         return REGISTRATE
                 .item(material.getNameWithSuffix("ingot"), Item::new)

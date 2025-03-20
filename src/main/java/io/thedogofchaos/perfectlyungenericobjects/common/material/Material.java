@@ -230,15 +230,23 @@ public class Material {
      */
     public enum MaterialComponent {
         /** If this component is present on a material, an Ingot {@link Item} will be generated for it. THIS COMPONENT IS MUTUALLY EXCLUSIVE WITH {@link MaterialComponent#GEM}! */
-        INGOT,
+        INGOT("ingot"),
         /** If this component is present on a material, a Nugget {@link Item} will be generated for it. */
-        NUGGET,
+        NUGGET("nugget"),
         /** If this component is present on a material, a {@link BlockItem} will be generated for it.</b> */
-        STORAGE_BLOCK,
+        STORAGE_BLOCK("storage_block"),
         /** If this component is present on a material, a Dust {@link Item} will be generated for it. */
-        DUST,
+        DUST("dust"),
         /** If this component is present on a material, a Gem {@link Item} will be generated for it. THIS COMPONENT IS MUTUALLY EXCLUSIVE WITH {@link MaterialComponent#INGOT}! */
-        GEM
+        GEM("gem");
+
+        @Getter
+        private final String componentName;
+
+        MaterialComponent(String componentName){
+            this.componentName = componentName;
+        };
+
     }
 
     public enum MaterialFlag {
