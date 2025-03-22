@@ -40,7 +40,7 @@ public class Material {
     @Getter
     private EnumSet<MaterialFlag> materialFlags;
 
-    // i wont even begin to claim that i know what the fuck this constructor is for
+    // i wont even begin to claim that i know what the fuck this constructor would be for
     protected Material(@NotNull ResourceLocation id) {
         this.materialInfo = new MaterialInfo(id);
         this.materialInfo.textures = MaterialTextures.DEV;
@@ -205,6 +205,9 @@ public class Material {
     }
 
     public static class MaterialInfo {
+        /**
+         * The ID of a material. MUST BE UNIQUE!
+         */
         @Getter
         @NotNull
         private final ResourceLocation id;
@@ -227,8 +230,10 @@ public class Material {
      * Represents the different physical forms a material can take.
      * A material may consist of one or more of these components, which determine
      * what items or blocks are generated for it.
+     *
+     * For simplicity, this is currently an enum. When I make this mod more extensible from (i.e. via adding a proper API), I might make this
      */
-    public enum MaterialComponent {
+    public enum MaterialComponent implements IMaterialComponent {
         /** If this component is present on a material, an Ingot {@link Item} will be generated for it. THIS COMPONENT IS MUTUALLY EXCLUSIVE WITH {@link MaterialComponent#GEM}! */
         INGOT("ingot"),
         /** If this component is present on a material, a Nugget {@link Item} will be generated for it. */
@@ -249,7 +254,7 @@ public class Material {
 
     }
 
-    public enum MaterialFlag {
+    public enum MaterialFlag implements IMaterialFlag{
         /** If this flag is present alongside any of the following combinations of components, basic 9:1 compression recipes will be automatically generated.
          * <ul>
          *     <li>{@link MaterialComponent#NUGGET} and {@link MaterialComponent#INGOT}</li>
