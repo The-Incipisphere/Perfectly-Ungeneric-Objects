@@ -27,6 +27,7 @@ import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +43,10 @@ public class MaterialRegistry {
     private final Map<String, RegistryEntry<Block>> MATERIAL_BLOCKS = new HashMap<>();
     private final Map<String, RegistryEntry<Item>> MATERIAL_ITEMS = new HashMap<>();
 
+    /** Disclaimer: If you're trying to set this field from another mod, you acknowledge that serious bullshit can happen, and should not complain if said bullshit does happen. (if you do complain anyway, <b>I will fucking {@code System.exit(-1);} you.</b>) */
     @Getter
     @Setter
+    @ApiStatus.Internal
     private boolean materialRegistryIsFrozen = false;
 
     /** DISCLAIMER: If you use reflection to make this constructor public, and shit hits the fan because of that, it's your fault for not using {@link MaterialRegistry#getInstance()}.*/
