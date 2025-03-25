@@ -30,7 +30,7 @@ import lombok.Getter;
 import java.util.EnumSet;
 import java.util.Set;
 
-/** Inspired largely by GregTech Modern's own material system */
+/** Inspired largely by GregTech's own material system. */
 public class Material {
     @NotNull
     @Getter

@@ -36,6 +36,7 @@ import static io.thedogofchaos.perfectlyungenericobjects.common.CommonProxy.REGI
 import static io.thedogofchaos.perfectlyungenericobjects.PerfectlyUngenericObjects.LOGGER;
 
 /** Singleton class that handles registration of all materials defined using this mod. */
+@ApiStatus.Internal
 public class MaterialRegistry {
     /** The Singleton instance of this class. Initialises early.*/
     private static final MaterialRegistry INSTANCE = new MaterialRegistry();
@@ -46,7 +47,6 @@ public class MaterialRegistry {
     /** Disclaimer: If you're trying to set this field from another mod, you acknowledge that serious bullshit can happen, and should not complain if said bullshit does happen. (if you do complain anyway, <b>I will fucking {@code System.exit(-1);} you.</b>) */
     @Getter
     @Setter
-    @ApiStatus.Internal
     private boolean materialRegistryIsFrozen = false;
 
     /** DISCLAIMER: If you use reflection to make this constructor public, and shit hits the fan because of that, it's your fault for not using {@link MaterialRegistry#getInstance()}.*/
