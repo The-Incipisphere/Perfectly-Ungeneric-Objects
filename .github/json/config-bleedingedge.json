@@ -14,7 +14,7 @@
     }
   ],
   "sort": "ASC",
-  "template": "## What's Changed\n#{{CHANGELOG}}\n\n<details>\n<summary>\nUncategorised changes:\n</summary>\n\n#{{UNCATEGORIZED}}\n</details>\n## Release Stats\nTotal Commits: #{{COMMITS}}\nAdditions: #{{ADDITIONS}}\nDeletions: #{{DELETIONS}}",
+  "template": "## What's Changed\n#{{CHANGELOG}}\n\n<details>\n<summary>\nUncategorised changes:\n</summary>\n\n#{{UNCATEGORIZED}}\n</details>\n\n## Release Stats\nTotal Commits: #{{COMMITS}}\nAdditions: #{{ADDITIONS}}\nDeletions: #{{DELETIONS}}",
   "commit_template": "- #{{TITLE}} [@#{{AUTHOR}} in #{{MERGE_SHA}}]",
   "pr_template": "- #{{TITLE}} [@#{{AUTHOR}} in [##{{NUMBER}}](#{{URL}})]",
   "empty_template": "# Graft changelog to yourself so that you have one hideous release message\n![What Changelog?](https://github.com/user-attachments/assets/f80c9175-4052-45d3-8eda-635187027819)\nWhat changelog?",
